@@ -3,10 +3,17 @@ from django.http import HttpResponse, Http404
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class BbLoginView(LoginView):
     template_name = 'main/login.html'
+
+
+class BbLogoutView(LoginRequiredMixin, LogoutView):
+    template_name = 'main/logout.html'
 
 
 def index(request):
@@ -19,3 +26,8 @@ def other_page(request, page):
     except TemplateDoesNotExist:
         raise Http404
     return HttpResponse(template.render(request=request))
+
+
+@login_required
+def profile(request):
+    return render(request, 'main/profile.html')
