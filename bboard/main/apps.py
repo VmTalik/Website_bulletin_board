@@ -3,7 +3,7 @@ from django.dispatch import Signal
 from .utilities import send_activation_notification
 
 #сигнал
-user_registered = Signal(providing_args=['instance'])
+user_registered = Signal()
 
 
 def user_registered_dispatcher(sender, **kwargs):
