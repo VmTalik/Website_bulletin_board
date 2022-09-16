@@ -16,6 +16,8 @@ from django.contrib.auth.views import PasswordChangeView
 from django.views.generic.edit import CreateView
 from .forms import RegisterFormUser
 from django.views.generic.base import TemplateView
+from django.core.signing import BadSignature
+from .utilities import signer
 
 
 class BbLoginView(LoginView):
@@ -67,7 +69,7 @@ class BbPasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChan
 
 
 class RegisterViewUser(CreateView):
-    """Контроллер для регистрации пользователя"""
+    """Класс - контроллер для регистрации пользователя"""
     model = AdvUser
     template_name = 'main/register_user.html'
     form_class = RegisterFormUser
@@ -75,5 +77,22 @@ class RegisterViewUser(CreateView):
 
 
 class RegisterViewDone(TemplateView):
-    """Контроллер, выводящий сообщение об успешной регистрации"""
+    """Класс - контроллер, выводящий сообщение об успешной регистрации"""
     template_name = 'main/register_done.html'
+
+
+def user_activate(request, sign):
+    """Функция конроллер для активации нового пользователя"""
+    try:
+        username = signer.unsign(sign)
+    except BadSignature:
+        return render(request, 'main/bad_signature.html')
+    user = get_object_or_404(AdvUser, username=username)
+    if user.is_activated:
+        template = 'main/user_is_activated.html'
+    else:
+        template = 'main/activation_done.html'
+        user.is_active = True
+        user.is_activated = True
+        user.save()
+    return render(request, template)
