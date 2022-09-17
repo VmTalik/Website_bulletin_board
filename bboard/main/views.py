@@ -18,6 +18,9 @@ from .forms import RegisterFormUser
 from django.views.generic.base import TemplateView
 from django.core.signing import BadSignature
 from .utilities import signer
+from django.views.generic.edit import DeleteView
+from django.contrib.auth import logout
+from django.contrib import messages
 
 
 class BbLoginView(LoginView):
@@ -96,3 +99,24 @@ def user_activate(request, sign):
         user.is_activated = True
         user.save()
     return render(request, template)
+
+
+class DeleteViewUser(LoginRequiredMixin, DeleteView):
+    """Класс-контроллер, удаляющий текущего пользователя"""
+    model = AdvUser
+    template_name = 'main/delete_user.html'
+    success_url = reverse_lazy('main:index')
+
+    def setup(self, request, *args, **kwargs):
+        self.user_id = request.user.pk
+        return super().setup(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        logout(request)
+        messages.add_message(request, messages.SUCCESS, 'Пользователь успешно удален')
+        return super().post(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        if not queryset:
+            queryset = self.get_queryset()
+        return get_object_or_404(queryset, pk=self.user_id)
