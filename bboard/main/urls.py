@@ -9,6 +9,8 @@ from .views import BbPasswordChangeView
 from .views import RegisterViewUser,RegisterViewDone
 from .views import user_activate
 from .views import DeleteViewUser
+from django.contrib.auth.views import PasswordResetView
+
 
 app_name = 'main'
 urlpatterns = [
@@ -23,4 +25,9 @@ urlpatterns = [
     path('accounts/login/', BbLoginView.as_view(), name='login'),
     path('<str:page>/', other_page, name='other'),
     path('', index, name='index'),
-]
+    path('accounts/password_reset/',PasswordResetView.as_view(
+        template_name='registration/reset_password.html',
+        subject_template_name='registration/reset_subject.txt',
+        email_template_name='registration/reset_email.txt'),
+         name='password_reset')
+    ]
