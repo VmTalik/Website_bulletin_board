@@ -10,7 +10,9 @@ from .views import RegisterViewUser,RegisterViewDone
 from .views import user_activate
 from .views import DeleteViewUser
 from django.contrib.auth.views import PasswordResetView
-
+from django.contrib.auth.views import PasswordResetDoneView
+from django.contrib.auth.views import PasswordResetConfirmView
+from django.contrib.auth.views import PasswordResetCompleteView
 
 app_name = 'main'
 urlpatterns = [
@@ -29,5 +31,14 @@ urlpatterns = [
         template_name='registration/reset_password.html',
         subject_template_name='registration/reset_subject.txt',
         email_template_name='registration/reset_email.txt'),
-         name='password_reset')
+         name='reset_password'),
+    path('accounts/password_reset/done/', PasswordResetDoneView.as_view(
+             template_name='registration/password_reset_done.html'),
+         name='password_reset_done'),
+    path('accounts/reset/<uidb64>/<token>/',PasswordResetConfirmView.as_view(
+             template_name='registration/confirm_password.html'),
+         name='password_reset_confirm'),
+    path('accounts/reset/done/',PasswordResetCompleteView.as_view(
+             template_name='registration/password_confirmed.html'),
+         name='password_reset_complete'),
     ]
