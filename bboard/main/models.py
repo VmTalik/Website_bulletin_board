@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class AdvUser(AbstractUser):
-    """Класс-модель пользователя User с дополнительными данными о пользователе"""
+    """Класс - модель пользователя User с дополнительными данными о пользователе"""
     is_activated = models.BooleanField(default=True, db_index=True,
                                        verbose_name='Активация пройдена?')
     send_messages = models.BooleanField(default=True, verbose_name='Высылать оповещения о новых комментариях?')
@@ -13,7 +13,7 @@ class AdvUser(AbstractUser):
 
 
 class Rubric(models.Model):
-    """Класс-модель рубрик"""
+    """Класс - модель рубрик"""
     name = models.CharField(max_length=25, db_index=True, unique=True,
                             verbose_name='Название')
     order = models.SmallIntegerField(default=0, db_index=True,
@@ -24,7 +24,7 @@ class Rubric(models.Model):
 
 
 class SuperRubricManager(models.Manager):
-    """Класс-модель диспетчер записей для изменения состава обрабатываемых
+    """Класс - модель диспетчер записей для изменения состава обрабатываемых
     моделью SuperRubric записей"""
 
     def get_queryset(self):
@@ -34,7 +34,7 @@ class SuperRubricManager(models.Manager):
 
 
 class SuperRubric(Rubric):
-    """Класс-прокси-модель для работы с надрубриками.Данная прокси-модель
+    """Класс - прокси-модель для работы с надрубриками.Данная прокси-модель
     позволяет менять функциональность модели"""
     objects = SuperRubricManager()
 
@@ -47,3 +47,28 @@ class SuperRubric(Rubric):
         ordering = ('order', 'name')
         verbose_name = 'Надрубрика'
         verbose_name_plural = 'Надрубрики'
+
+
+class SubRubricManager(models.Manager):
+    """Класс - модель диспетчер записей для изменения состава обрабатываемых
+    моделью SubRubric записей"""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(super_rubric__isnull=False)
+
+
+class SubRubric(Rubric):
+    """Класс - модель подрубрик"""
+    objects = SubRubricManager()
+
+    def __str__(self):
+        """Функция, результатом которой является строковое представление:
+        название надрубрики - название подрубрики"""
+        return '%s -%s' % (self.super_rubric.name, self.name)
+
+    class Meta:
+        proxy = True
+        ordering = ('super_rubric__order','super_rubric__name','order',
+                    'name')
+        verbose_name = 'Подрубрика'
+        verbose_name_plural = 'Подрубрики'
