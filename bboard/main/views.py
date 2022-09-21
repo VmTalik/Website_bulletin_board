@@ -21,6 +21,10 @@ from .utilities import signer
 from django.views.generic.edit import DeleteView
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.views import PasswordResetDoneView
+from django.contrib.auth.views import PasswordResetConfirmView
+from django.contrib.auth.views import PasswordResetCompleteView
 
 
 class BbLoginView(LoginView):
@@ -120,3 +124,27 @@ class DeleteViewUser(LoginRequiredMixin, DeleteView):
         if not queryset:
             queryset = self.get_queryset()
         return get_object_or_404(queryset, pk=self.user_id)
+
+
+class PasswordViewReset(PasswordResetView):
+    """Класс-контроллер. Запрос на сброс пароля"""
+    template_name = 'main/reset_password.html'
+    subject_template_name = 'email/reset_subject_email.txt'
+    email_template_name = 'email/reset_email.txt'
+    success_url = reverse_lazy('main:password_reset_done')
+
+
+class PasswordResetViewDone(PasswordResetDoneView):
+    """Класс-котнроллер. Уведомление о том что письмо о сбросе пароля отправлено на почту"""
+    template_name = 'main/password_reset_done.html'
+
+
+class PasswordResetViewConfirm(PasswordResetConfirmView):
+    """Класс-контроллер. Сброс старого пароля"""
+    template_name = 'main/password_reset_confirm.html'
+    success_url = reverse_lazy('main:password_reset_complete')
+
+
+class PasswordResetViewComplete(PasswordResetCompleteView):
+    """Класс-контроллер. Уведомление об успешном сбросе пароля"""
+    template_name = 'main/password_confirmed.html'
