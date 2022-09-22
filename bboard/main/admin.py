@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import AdvUser
 from .utilities import send_activation_notification
 import datetime
+from .models import SuperRubric, SubRubric
 
 
 def send_activation_notifications(modeladmin, request, queryset):
@@ -49,10 +50,24 @@ class AdvUserAdmin(admin.ModelAdmin):
     list_filter = (NonactivatedFilter,)
     fields = (('username', 'email'), ('first_name', 'last_name'),
               ('send_messages', 'is_active', 'is_activated'),
-              ('is_staff','is_superuser'), 'groups', 'user_permissions',
+              ('is_staff', 'is_superuser'), 'groups', 'user_permissions',
               ('last_login', 'date_joined'))
     readonly_fields = ('last_login', 'date_joined')
     actions = (send_activation_notifications,)
 
 
 admin.site.register(AdvUser, AdvUserAdmin)
+
+
+class SubRubricInline(admin.TabularInline):
+    "Класс - редактор подрубрик административного сайта"
+    model = SubRubric
+
+
+class SuperRubricAdmin(admin.ModelAdmin):
+    """Класс - редактор надрубрик административного сайта"""
+    exclude = ('super_rubric',)
+    inlines = (SubRubricInline,)
+
+
+admin.site.register(SuperRubric, SuperRubricAdmin)
