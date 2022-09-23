@@ -59,3 +59,16 @@ class SubRubricForm(forms.ModelForm):
     class Meta:
         model = SubRubric
         fields = '__all__'
+
+
+
+
+
+
+
+
+
+
+
+
+
