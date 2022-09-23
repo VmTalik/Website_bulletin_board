@@ -13,6 +13,7 @@ from .views import PasswordViewReset
 from .views import PasswordResetViewDone
 from .views import PasswordResetViewConfirm
 from .views import PasswordResetViewComplete
+from .views import by_rubric
 
 app_name = 'main'
 urlpatterns = [
@@ -25,6 +26,7 @@ urlpatterns = [
     path('accounts/password/change/', BbPasswordChangeView.as_view(), name='password_change'),
     path('accounts/profile/', profile, name='profile'),
     path('accounts/login/', BbLoginView.as_view(), name='login'),
+    path('<int:pk>/', by_rubric, name='by_rubric'),
     path('<str:page>/', other_page, name='other'),
     path('', index, name='index'),
     path('accounts/password_reset/', PasswordViewReset.as_view(), name='reset_password'),
