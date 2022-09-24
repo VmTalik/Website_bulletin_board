@@ -61,14 +61,6 @@ class SubRubricForm(forms.ModelForm):
         fields = '__all__'
 
 
-
-
-
-
-
-
-
-
-
-
-
+class SearchForm(forms.Form):
+    """Класс - форма для поиска слов, введенных пользователем"""
+    keyword = forms.CharField(required=False, max_length=25, label='')
