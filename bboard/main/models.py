@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from .utilities import get_timestamp_path
 
 
 class AdvUser(AbstractUser):
@@ -68,7 +69,32 @@ class SubRubric(Rubric):
 
     class Meta:
         proxy = True
-        ordering = ('super_rubric__order','super_rubric__name','order',
+        ordering = ('super_rubric__order', 'super_rubric__name', 'order',
                     'name')
         verbose_name = 'Подрубрика'
         verbose_name_plural = 'Подрубрики'
+
+
+class Bb(models.Model):
+    """Класс - модель объявлений"""
+    rubric = models.ForeignKey(SubRubric, on_delete=models.PROTECT, verbose_name='Рубрика')
+    title = models.CharField(max_length=45, verbose_name='Объект продажи')
+    content = models.TextField(verbose_name='Описание')
+    price = models.FloatField(default=0, verbose_name='Цена')
+    contacts = models.TextField(verbose_name='Контакты')
+    image = models.ImageField(blank=True, upload_to=get_timestamp_path, verbose_name='Изображение')
+    author = models.ForeignKey(AdvUser, on_delete=models.CASCADE, verbose_name='Автор объявления')
+    is_active = models.BooleanField(default=True, db_index=True, verbose_name='Выводить в списке ?')
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Опубликовано')
+
+    def delete(self, *args, **kwargs):
+        """Функция, удаляющая дполнительные иллюстрации. При вызове данного метода
+        возникает сигнал post_delete, обрабатываемый приложением django_cleanup"""
+        for i in self.additionalimage_set.all():
+            i.delete()
+        super().delete(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = 'Объявления'
+        verbose_name = 'Объявление'
+        ordering = ['-created_at']
