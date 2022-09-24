@@ -4,6 +4,7 @@ from .utilities import send_activation_notification
 import datetime
 from .models import SuperRubric, SubRubric
 from .forms import SubRubricForm
+from .models import Bb, AdditionalImage
 
 
 def send_activation_notifications(modeladmin, request, queryset):
@@ -80,3 +81,19 @@ class SubRubricAdmin(admin.ModelAdmin):
 
 
 admin.site.register(SubRubric, SubRubricAdmin)
+
+
+class AdditionalImageInline(admin.TabularInline):
+    """Класс - встроенный редактор дополнительных иллюстраций"""
+    model = AdditionalImage
+
+
+class BbAdmin(admin.ModelAdmin):
+    """Класс - редактор объявлений"""
+    list_display = ('rubric', 'title', 'content', 'author', 'created_at')
+    fields = (('rubric', 'author'), 'title', 'content', 'price',
+              'contacts', 'image', 'is_active')
+    inlines = (AdditionalImageInline,)
+
+
+admin.site.register(Bb, BbAdmin)
