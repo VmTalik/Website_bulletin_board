@@ -40,7 +40,9 @@ class BbLogoutView(LoginRequiredMixin, LogoutView):
 
 
 def index(request):
-    return render(request, 'main/index.html')
+    bbs = Bb.objects.filter(is_active=True)[:10]
+    contex = {'bbs':bbs}
+    return render(request, 'main/index.html',contex)
 
 
 def other_page(request, page):
