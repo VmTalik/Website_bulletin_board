@@ -41,8 +41,8 @@ class BbLogoutView(LoginRequiredMixin, LogoutView):
 
 def index(request):
     bbs = Bb.objects.filter(is_active=True)[:10]
-    contex = {'bbs':bbs}
-    return render(request, 'main/index.html',contex)
+    context = {'bbs': bbs}
+    return render(request, 'main/index.html', context)
 
 
 def other_page(request, page):
@@ -55,7 +55,10 @@ def other_page(request, page):
 
 @login_required
 def profile(request):
-    return render(request, 'main/profile.html')
+    """Функция-контроллер, вывод объявлений текущего пользователя"""
+    bbs = Bb.objects.filter(author=request.user.pk)
+    context = {'bbs': bbs}
+    return render(request, 'main/profile.html', context)
 
 
 class ChangeInfoViewUser(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
@@ -184,21 +187,3 @@ def detail(request, rubric_pk, pk):
     ais = bb.additionalimage_set.all()
     context = {'bb': bb, 'ais': ais}
     return render(request, 'main/detail.html', context)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
