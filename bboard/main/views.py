@@ -187,3 +187,13 @@ def detail(request, rubric_pk, pk):
     ais = bb.additionalimage_set.all()
     context = {'bb': bb, 'ais': ais}
     return render(request, 'main/detail.html', context)
+
+
+@login_required
+def profile_bb_detail(request, pk):
+    """Функция-контроллер страницы сведений выбранного объявления в профиле
+     текущего пользователя"""
+    bb = get_object_or_404(Bb, pk=pk)
+    ais = bb.additionalimage_set.all()
+    context = {'bb': bb, 'ais': ais}
+    return render(request, 'main/profile_detail.html', context)
