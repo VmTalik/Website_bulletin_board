@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from .apps import user_registered
 from django.forms import inlineformset_factory
 from .models import Bb, AdditionalImage
+from captcha.fields import CaptchaField
+from .models import Comment
 
 
 class ChangeInfoFormUser(forms.ModelForm):
@@ -79,3 +81,23 @@ class BbForm(forms.ModelForm):
 
 """Встроенный набор форм дополнительных иллюстраций"""
 AIFormSet = inlineformset_factory(Bb, AdditionalImage, fields='__all__')
+
+
+class UserCommentForm(forms.ModelForm):
+    """Класс-форма комментариев зарегистрированного пользователя"""
+
+    class Meta:
+        model = Comment
+        exclude = ('is_active',)
+        widgets = {'bb': forms.HiddenInput}
+
+
+class GuestCommentForm(forms.ModelForm):
+    """Класс-форма комментариев гостя"""
+    captcha = CaptchaField(label='Введите символы с изображения',
+                           error_messages={'invalid': 'Неверный ввод!'})
+
+    class Meta:
+        model = Comment
+        exclude = ('is_active',)
+        widgets = {'bb': forms.HiddenInput}
