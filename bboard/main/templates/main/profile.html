@@ -6,10 +6,13 @@
 {% block content %}
 <h2>Профиль пользователя {{user.username}}</h2>
 {% if user.first_name and user.last_name %}
-<p>{{user.first_name}} {{user.last_name}}, здравствуйте!</p>
+<p>{{user.first_name}} {{user.last_name}}, здравствуйте! Здесь показаны все Ваши объявления.
+    Вы можете их отредактировать, удалить или добавить новое объявление</p>
 {% else %}
-<p>Здравствуйте!</p>
+<p>Здравствуйте! Здесь показаны все Ваши объявления. Вы можете их отредактировать,
+    удалить или добавить новое объявление</p>
 {% endif %}
+<p><a href="{% url 'main:profile_bb_add' %}">Добавить объявление</a></p>
 <h3>Ваши объявления</h3>
 <h4 class="mb-2">{{ rubric }}</h4>
 {% if bbs %}
@@ -30,7 +33,9 @@
             <div>{{ bb.content }}</div>
             <p class="text-right font-weight-bold">{{ bb.price }} руб.</p>
             <p class="text-right font-italic">{{ bb.created_at }}</p>
-            <p><a href="{% url 'main:profile_bb_add' %}">Добавить объявление</a></p>
+            <p><a href="{% url 'main:profile_bb_change' pk=bb.pk %}">Редактировать</a>
+            <p><a href="{% url 'main:profile_bb_delete' pk=bb.pk %}">Удалить</a>
+            </p>
         </div>
     </li>
     {% endfor %}
