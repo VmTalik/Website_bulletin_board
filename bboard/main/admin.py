@@ -5,6 +5,7 @@ import datetime
 from .models import SuperRubric, SubRubric
 from .forms import SubRubricForm
 from .models import Bb, AdditionalImage
+from .models import Comment
 
 
 def send_activation_notifications(modeladmin, request, queryset):
@@ -97,3 +98,12 @@ class BbAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Bb, BbAdmin)
+
+
+class CommentAdmin(admin.ModelAdmin):
+    """Класс - редактор комментариев"""
+    list_display = ('bb', 'author', 'content', 'is_active', 'created_at')
+    fields = (('bb', 'author'), 'content', 'is_active')
+
+
+admin.site.register(Comment, CommentAdmin)
