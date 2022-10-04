@@ -31,6 +31,8 @@ from .models import SubRubric, Bb
 from .forms import SearchForm
 from django.shortcuts import redirect
 from .forms import BbForm, AIFormSet
+from .models import Comment
+from .forms import UserCommentForm, GuestCommentForm
 
 
 class BbLoginView(LoginView):
@@ -185,9 +187,28 @@ def by_rubric(request, pk):
 
 def detail(request, rubric_pk, pk):
     """Функция-контроллер страницы сведений выбранного объявления """
-    bb = get_object_or_404(Bb, pk=pk)
+    bb = Bb.objects.get(pk=pk)
     ais = bb.additionalimage_set.all()
-    context = {'bb': bb, 'ais': ais}
+    comments = Comment.objects.filter(bb=pk, is_active=True)
+    initial = {'bb': bb.pk}
+    if request.user.is_authenticated:
+        initial['author'] = request.user.username
+        form_class = UserCommentForm
+    else:
+        form_class = GuestCommentForm
+    form = form_class(initial=initial)
+    if request.method == 'POST':
+        c_form = form_class(request.POST)
+        if c_form.is_valid():
+            c_form.save()
+            messages.add_message(request, messages.SUCCESS,
+                                 'Комментарий успешно добавлен !')
+        else:
+            form = c_form
+            messages.add_message(request, messages.WARNING,
+                                 'Ошибка. Комментарий не был добавлен')
+
+    context = {'bb': bb, 'ais': ais, 'comments': comments, 'form': form}
     return render(request, 'main/detail.html', context)
 
 
