@@ -1,0 +1,10 @@
+*.log
+*.pot
+*.pyc
+__pycache__/
+venv/
+.idea/
+settings.py
+local_settings.py
+db.sqlite3
+media
